@@ -1,0 +1,305 @@
+<html>
+<head>
+
+  <style>
+   @font-face {
+      font-family: "GeoSans";
+      src: url("assests/GeosansLight.ttf");
+    }
+    html{ color:#fff; background:#000; font-family:"GeoSans" }
+    body{
+      font-size:30px;
+    }
+
+
+    a{
+      color: #fff;
+    }
+    a:hover{
+      color: #fff;
+      font-weight:bold;
+    }
+    a:visited{
+      color:#dfd;
+    }
+    #README{
+      position:absolute;
+      z-index:999;
+      background:rgba( 0,0,0,.3);
+      margin: 100px;
+      padding: 20px;
+      border: 1px solid white;
+    }
+    #renderer{
+
+      position:fixed;
+      top:0px;
+      left:0px;
+
+    }
+  </style>
+
+</head>
+<body style="margin:0px">
+
+<div id="README" style='-moz-user-select: none; -webkit-user-select: none; -ms-user-select:none; user-select:none;-o-user-select:none;' 
+ unselectable='on'
+ onselectstart='return false;' 
+ onmousedown='return false;'>
+  <h1 id="objectcontrols">ObjectControls</h1>
+  <p>Object Controls are a lightweight attempt to make manipulating objects in three.js slightly easier. I&#39;m open to suggestions, and would love to hear if / how you use it, so please hit me up on <a href="http://twitter.com/cabbibo">Twitter</a> if you have any questions / concerns / comments / general hatred. </p>
+  <p>*<a href="http://github.com/cabbibo/ObjectControls">View Project on Github</a></p>
+  <p>Controlling objects in three.js is already very easy, and you can see some great examples of how to do it yourself by looking at some three.js examples:</p>
+  <ul>
+  <li><a href="http://threejs.org/examples/#webgl_interactive_draggablecubes">Threejs Draggable Cubes</a></li>
+  <li><a href="http://threejs.org/examples/#webgl_interactive_buffergeometry">ThreeJS BufferGeometry</a></li>
+  </ul>
+  <p>But if you want to not have to implement it yourself, these controls are a great place to start! To see what can be done with them, Check out some of the following projects:</p>
+  <ul>
+  <li><a href="http://cabbi.bo/">cabbibo</a> - For intersection with all objects</li>
+  <li><a href="http://cabbi.bo/growingBoy">Growing Boy</a> - For figuring out mouse position in 3D</li>
+  <li><a href="http://cabbi.bo/Needs/">Needs</a> - For selecting balls / songs</li>
+  <li><a href="http://cabbi.bo/DRAGONFISH">DRAGONFISH</a> - For determining where creature moves</li>
+  </ul>
+  <p>There is also bunch more examples you can check out if you are more of a &#39;stare at the code&#39; human being:</p>
+  <ul>
+  <li><a href="http://cabbi.bo/ObjectControls/examples/drag.html">Drag</a> - A basic Drag and Drop example</li>
+  <li><a href="http://cabbi.bo/ObjectControls/examples/highlight.html">Highlight</a> - The Most Basic example of highlighting different balls</li>
+  <li><a href="http://cabbi.bo/ObjectControls/examples/displace.html">Displace</a> - Balls move away from your mouse when hit</li>
+  <li><a href="http://cabbi.bo/ObjectControls/examples/noises.html">Noises</a> - make noises when you hit the objects</li>
+  </ul>
+  <p>But lets talk about how to actually use the code!</p>
+  <h3 id="setup-">Setup:</h3>
+  <p>First off include the script:</p>
+  <pre><code class="lang-javascript">&lt;script src=<span class="hljs-string">"PATH/TO/ObjectControls.js"</span>&gt;<span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-title">script</span>&gt;</span></span>
+  </code></pre>
+  <p>Do all the thing that you would normally do with threejs, like setting up the renderer, scene and camera. Once you have done all this you can initialize the controls:</p>
+  <pre><code class="lang-javascript">    objectControls = <span class="hljs-keyword">new</span> ObjectControls( camera );
+  </code></pre>
+  <p>The &#39;camera&#39; is passed into the ObjectControls , as the &#39;Eye&#39; of the raycast. You could pass in a different &#39;eye&#39; if you want, but it probably won&#39;t make too much sense...</p>
+  <p>Within your &#39;animate&#39; loop, make sure that you update the objectcontrols, like so:</p>
+  <pre><code class="lang-javascript">    objectControls.update();
+  </code></pre>
+  <p>This is all you have to do to set up the Object Controls. But so far they don&#39;t do anything, so lets see how we can change that!</p>
+  <h3 id="how-to-use-">How to use:</h3>
+  <p>The object controls are used by adding meshes to them. All of the logic of what happens when the meshes are interacted with is added to the mesh, so it controls itself! Here&#39;s a basic example of how to add meshes to the object controls:</p>
+  <pre><code class="lang-javascript">      <span class="hljs-keyword">var</span> mat = <span class="hljs-keyword">new</span> THREE.MeshNormalMaterial();
+      <span class="hljs-keyword">var</span> geo = <span class="hljs-keyword">new</span> THREE.IcosahedronGeometry( <span class="hljs-number">10</span> , <span class="hljs-number">1</span> );
+      <span class="hljs-keyword">var</span> mesh = <span class="hljs-keyword">new</span> THREE.Mesh( geo , mat );
+
+
+      <span class="hljs-comment">// This is what will be called when</span>
+      <span class="hljs-comment">// the mesh gets hovered over ( intersected</span>
+      mesh.hoverOver = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span></span>{
+
+      }
+
+      <span class="hljs-comment">// This is what will get called when</span>
+      <span class="hljs-comment">// the mesh gets hovered out ( unintersected )</span>
+      mesh.hoverOut = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span></span>{
+
+      }
+
+      <span class="hljs-comment">// This is what will be called if teh mesh</span>
+      <span class="hljs-comment">// is both hovered, and the mousedown / touch happens</span>
+      mesh.select = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span></span>{
+
+      }
+
+      <span class="hljs-comment">// This is what will be called if the mesh</span>
+      <span class="hljs-comment">// is selected and than becomes 'deselected' </span>
+      <span class="hljs-comment">// AKA the mouse gets released</span>
+      mesh.deselect = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span></span>{
+
+      }
+
+
+      <span class="hljs-comment">// This is what will be called</span>
+      <span class="hljs-comment">// every frame on the mesh while it is</span>
+      <span class="hljs-comment">// selected</span>
+      mesh.update = <span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">()</span></span>{
+
+      }
+  </code></pre>
+  <p>As usual, although the code is stable, this is still a work in progress, so if you see any problems, please please please let me know! Also, if there is something you want to see implemented, have any other suggestions, or use the code for anything I&#39;d love to see how you used it, so hit me up on <a href="http://twitter.com/cabbibo">Twitter</a></p>
+</div>
+
+  <script src="lib/three.min.js"></script>
+  <script src="ObjectControls.js"></script>
+ <script>
+
+
+    var scene, camera, renderer;
+
+    var objectControls;
+    var objects = [];
+
+    var clock, time = 0;
+
+    var intersectionPlane;
+
+    init();
+    animate();
+
+    function init(){
+
+
+      /*
+
+         Default threejs stuff!
+
+      */
+      scene = new THREE.Scene();
+
+      var ar = window.innerWidth / window.innerHeight;
+
+      camera = new THREE.PerspectiveCamera( 75, ar , 1, 1000 );
+      camera.position.z = 100;
+
+      renderer = new THREE.WebGLRenderer();
+      renderer.setSize( window.innerWidth, window.innerHeight );
+
+      document.body.appendChild( renderer.domElement );
+      renderer.domElement.id = "renderer"
+
+
+      clock = new THREE.Clock();
+
+      light = new THREE.DirectionalLight( 0xff6666 , .9 );
+      light.position.set( 1 , 0 , 0 );
+      scene.add( light );
+
+      light = new THREE.DirectionalLight( 0x66ff77 , .9 );
+      light.position.set( -1 , 0 , 0 );
+      scene.add( light );
+
+      light = new THREE.DirectionalLight( 0x6688ff , .9 );
+      light.position.set( 0 , 0 , 1 );
+      scene.add( light );
+
+
+      /*
+
+         Object Control stuff!!!!
+
+      */ 
+
+      objectControls = new ObjectControls( camera );
+
+
+      var geo = new THREE.PlaneGeometry( 100000 , 100000 );
+      var mat = new THREE.MeshNormalMaterial({side: THREE.DoubleSide});
+      intersectionPlane = new THREE.Mesh( geo , mat );
+      intersectionPlane.visible = false;
+      scene.add( intersectionPlane );
+
+
+
+      var hoverMaterial     = new THREE.MeshNormalMaterial();
+      var neutralMaterial   = new THREE.MeshLambertMaterial({color:0xffcccc});
+      var selectedMaterial  = new THREE.MeshBasicMaterial({color:0x55ff88});
+
+      var geo = new THREE.IcosahedronGeometry( 10 , 1 );
+
+      for( var i = 0; i < 50; i++ ){
+
+        var mesh = new THREE.Mesh( geo , neutralMaterial );
+
+        mesh.hoverMaterial    = hoverMaterial;
+        mesh.neutralMaterial  = neutralMaterial;
+        mesh.selectedMaterial = selectedMaterial;
+
+        mesh.selected = false;
+
+        mesh.hoverOver = function(){
+
+          this.material = this.hoverMaterial;
+          this.materialNeedsUpdate = true;
+          intersectionPlane.position.copy( this.position );
+          
+
+        }.bind( mesh );
+
+
+        mesh.hoverOut = function(){
+
+          if( this.selected ){
+            this.material = this.selectedMaterial;
+            this.materialNeedsUpdate = true;
+          }else{
+            this.material = this.neutralMaterial;
+            this.materialNeedsUpdate = true;
+          }
+
+
+        }.bind( mesh );
+
+        mesh.select = function(){
+
+          this.selected = true;
+          this.material = this.selectedMaterial;
+          this.materialNeedsUpdate = true;
+
+          intersectionPlane.position.copy( this.position );
+          
+
+        }.bind( mesh );
+
+        mesh.deselect = function(){
+
+          this.selected = false;
+          this.material = this.neutralMaterial;
+          this.materialNeedsUpdate = true;
+
+        }.bind( mesh );
+
+        mesh.update = function(){
+
+  
+          var raycaster = objectControls.raycaster;
+          var i = raycaster.intersectObject( intersectionPlane );
+
+          if( !i[0] ){ 
+            console.log( 'something is terribly wrong' );
+          }else{
+            this.position.copy( i[0].point );
+          }
+
+        }.bind( mesh );
+
+        mesh.position.x = (Math.random() -.5 ) * 200;
+        mesh.position.y = (Math.random() -.5 ) * 200;
+        mesh.position.z = (Math.random() -.5 ) * 200;
+        scene.add( mesh );
+
+        objectControls.add( mesh );
+
+      }
+
+    }
+
+    function animate(){
+
+      requestAnimationFrame( animate );
+      
+      objectControls.update();
+
+      time += clock.getDelta();
+      camera.position.x = Math.sin( time * .1 ) * 150;
+      camera.position.z = Math.cos( time * .1 ) * 150;
+      camera.lookAt(scene.position);
+      renderer.render( scene , camera );
+  
+
+
+    }
+
+  </script>
+
+
+ 
+
+
+
+</body>
+<html>

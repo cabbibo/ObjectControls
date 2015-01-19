@@ -1,0 +1,128 @@
+<html>
+<body style="margin:0px">
+  <script src="../lib/three.min.js"></script>
+  <script src="../ObjectControls.js"></script>
+  <script>
+
+
+    var scene, camera, renderer;
+
+    var objectControls;
+    var objects = [];
+
+    init();
+    animate();
+
+    function init(){
+
+
+      /*
+
+         Default threejs stuff!
+
+      */
+      scene = new THREE.Scene();
+
+      var ar = window.innerWidth / window.innerHeight;
+
+      camera = new THREE.PerspectiveCamera( 75, ar , 1, 1000 );
+      camera.position.z = 100;
+
+      renderer = new THREE.WebGLRenderer();
+      renderer.setSize( window.innerWidth, window.innerHeight );
+
+      document.body.appendChild( renderer.domElement );
+
+
+      /*
+
+         Object Control stuff!!!!
+
+      */ 
+
+      objectControls = new ObjectControls( camera );
+
+      var hoverMaterial     = new THREE.MeshNormalMaterial();
+      var neutralMaterial   = new THREE.MeshBasicMaterial({color:0xffcccc});
+      var selectedMaterial  = new THREE.MeshBasicMaterial({color:0x55ff88});
+
+      var geo = new THREE.IcosahedronGeometry( 10 , 1 );
+
+      for( var i = 0; i < 50; i++ ){
+
+        var mesh = new THREE.Mesh( geo , neutralMaterial );
+
+        mesh.hoverMaterial    = hoverMaterial;
+        mesh.neutralMaterial  = neutralMaterial;
+        mesh.selectedMaterial = selectedMaterial;
+
+        mesh.selected = false;
+
+        mesh.hoverOver = function(){
+
+          this.material = this.hoverMaterial;
+          this.materialNeedsUpdate = true;
+
+        }.bind( mesh );
+
+
+        mesh.hoverOut = function(){
+
+          if( this.selected ){
+            this.material = this.selectedMaterial;
+            this.materialNeedsUpdate = true;
+          }else{
+            this.material = this.neutralMaterial;
+            this.materialNeedsUpdate = true;
+          }
+
+
+        }.bind( mesh );
+
+        mesh.select = function(){
+
+          this.selected = true;
+          this.material = this.selectedMaterial;
+          this.materialNeedsUpdate = true;
+
+        }
+
+        mesh.deselect = function(){
+
+          this.selected = false;
+          this.material = this.neutralMaterial;
+          this.materialNeedsUpdate = true;
+
+        }
+
+
+        mesh.position.x = (Math.random() -.5 ) * 200;
+        mesh.position.y = (Math.random() -.5 ) * 200;
+        mesh.position.z = (Math.random() -.5 ) * 100;
+        scene.add( mesh );
+
+        objectControls.add( mesh );
+
+      }
+
+    }
+
+    function animate(){
+
+      requestAnimationFrame( animate );
+      
+      objectControls.update();
+
+      renderer.render( scene , camera );
+  
+
+
+    }
+
+  </script>
+
+
+
+
+</body>
+<html>
