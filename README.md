@@ -23,6 +23,7 @@ There is also bunch more examples you can check out if you are more of a 'stare 
 
 * [Drag] - A basic Drag and Drop example
 * [Highlight] - The Most Basic example of highlighting different balls
+* [HighlightGroup] - Highlight groups of balls
 * [Displace] - Balls move away from your mouse when hit
 * [Noises] - make noises when you hit the objects
 
@@ -59,6 +60,7 @@ The object controls are used by adding meshes to them. All of the logic of what 
     var mat = new THREE.MeshNormalMaterial();
     var geo = new THREE.IcosahedronGeometry( 10 , 1 );
     var mesh = new THREE.Mesh( geo , mat );
+    objectControls.add( mesh );
     
     
     // This is what will be called when
@@ -97,6 +99,8 @@ The object controls are used by adding meshes to them. All of the logic of what 
     
 ```
 
+In addition to controling a mesh as shown above, you can also control an Object3D with child meshes. Then events are triggered on the Object3D whenever any of its child meshes are intersected. To enable, set recursive:true in the params passed to the ObjectControls constructor, as shown in the [HighlightGroup] example.
+
 As usual, although the code is stable, this is still a work in progress, so if you see any problems, please please please let me know! Also, if there is something you want to see implemented, have any other suggestions, or use the code for anything I'd love to see how you used it, so hit me up on [Twitter]
 
 
@@ -108,6 +112,7 @@ As usual, although the code is stable, this is still a work in progress, so if y
 
 [Drag]: http://cabbi.bo/ObjectControls/examples/drag.html
 [Highlight]: http://cabbi.bo/ObjectControls/examples/highlight.html
+[HighlightGroup]: http://cabbi.bo/ObjectControls/examples/highlightGroup.html
 [Displace]: http://cabbi.bo/ObjectControls/examples/displace.html
 [Noises]: http://cabbi.bo/ObjectControls/examples/noises.html
 

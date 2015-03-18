@@ -15,6 +15,9 @@ function ObjectControls( eye , params ){
   var p = params;
 
   this.domElement         = p.domElement         || document;
+
+  // Recursively check descendants of objects in this.objects for intersections.
+  this.recursive          = p.recursive          || false;
   
   this.raycaster          = new THREE.Raycaster();
 
@@ -241,9 +244,30 @@ ObjectControls.prototype.setRaycaster = function( position ){
 
 ObjectControls.prototype.checkForIntersections = function( position ){
 
-  var intersected =  this.raycaster.intersectObjects( this.objects );
+  var intersected =  this.raycaster.intersectObjects( this.objects, this.recursive );
+
 
   if( intersected.length > 0 ){
+
+    for (var n = 0; n < intersected.length; n++ ) {
+
+      if ( this.recursive ) {
+
+        var topLevelObj = this._findTopLevelAncestor( intersected[n].object );
+        if ( topLevelObj ) {
+
+          // Reset intersected.object, leave intersected.point etc. unchanged.
+          // This works since in the two most common use cases the ancestor:
+          // (1) contains the child object (and the intersection point)
+          // (2) is not a THREE.Mesh and thus doesn't appear in the scene, 
+          //     e.g. an Object3D used for grouping other related objects.
+          intersected[n].object = topLevelObj;
+
+        }
+
+      }
+
+    }
 
     this._objectIntersected( intersected );
 
@@ -274,11 +298,34 @@ ObjectControls.prototype.checkForUpDown = function( hand , oHand ){
 
 ObjectControls.prototype.getIntersectionPoint = function( i ){
 
-  var intersected =  this.raycaster.intersectObjects( this.objects );
+  var intersected =  this.raycaster.intersectObjects( this.objects, this.recursive );
  
   return intersected[0].point.sub( i.position );
 
 }
+
+ObjectControls.prototype._findTopLevelAncestor = function( object ){
+
+  // Traverse back up until we find the first ancestor that is a top-level
+  // object then return it (or null), since only top-level objects (which
+  // were passed to objectControls.add) handle events, even if their child
+  // objects are the ones intersected.
+
+  while ( this.objects.indexOf(object) === -1) {
+
+    if ( !object.parent ) {
+
+      return null;
+
+    }
+
+    object = object.parent;
+
+  }
+
+  return object;
+
+} 
 
 
 
